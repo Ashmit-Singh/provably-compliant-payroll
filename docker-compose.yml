@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    container_name: compliant-payroll-db
+    environment:
+      POSTGRES_DB: compliant_payroll
+      POSTGRES_USER: payroll_user
+      POSTGRES_PASSWORD: payroll_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/src/main/resources/data.sql:/docker-entrypoint-initdb.d/data.sql
+    networks:
+      - payroll-network
+
+  # Spring Boot Backend
+  backend:
+    build: ./backend
+    container_name: compliant-payroll-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/compliant_payroll
+      SPRING_DATASOURCE_USERNAME: payroll_user
+      SPRING_DATASOURCE_PASSWORD: payroll_pass
+      BLOCKCHAIN_NODE_URL: http://blockchain:8545
+      AI_SERVICE_URL: http://ai-service:8000
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - blockchain
+      - ai-service
+    networks:
+      - payroll-network
+    restart: unless-stopped
+
+  # AI Service
+  ai-service:
+    build: ./ai-service
+    container_name: compliant-payroll-ai
+    ports:
+      - "8000:8000"
+    networks:
+      - payroll-network
+    restart: unless-stopped
+
+  # Blockchain Node (Ganache for development)
+  blockchain:
+    image: trufflesuite/ganache-cli:latest
+    container_name: compliant-payroll-blockchain
+    command: ["--deterministic", "--db", "/data", "--networkId", "5777", "-m", "test test test test test test test test test test test junk", "-a", "10"]
+    ports:
+      - "8545:8545"
+    volumes:
+      - blockchain_data:/data
+    networks:
+      - payroll-network
+
+  # Frontend
+  frontend:
+    build: ./frontend
+    container_name: compliant-payroll-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - payroll-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  blockchain_data:
+
+networks:
+  payroll-network:
+    driver: bridge

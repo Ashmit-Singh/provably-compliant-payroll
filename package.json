@@ -1,0 +1,24 @@
+{
+  "name": "provably-compliant-payroll",
+  "version": "1.0.0",
+  "description": "Provably Compliant Enterprise Payroll System",
+  "scripts": {
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && mvn spring-boot:run",
+    "frontend": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "install-deps": "cd frontend && npm install"
+  },
+  "keywords": [
+    "payroll",
+    "blockchain",
+    "compliance",
+    "react",
+    "spring-boot"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
