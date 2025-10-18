@@ -1,15 +1,24 @@
 package com.compliantpay.controller;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.compliantpay.model.PayrollRequest;
 import com.compliantpay.model.PayrollRun;
 import com.compliantpay.service.PayrollService;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.compliantpay.util.SecurityUtils;
 
-import java.util.List;
-import java.util.UUID;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/payroll")
@@ -22,6 +31,8 @@ public class PayrollController {
     @PostMapping("/run")
     public ResponseEntity<?> runPayroll(@Valid @RequestBody PayrollRequest request) {
         try {
+            // sanitize pay period string before processing
+            request.setPayPeriod(SecurityUtils.sanitize(request.getPayPeriod()));
             PayrollRun result = payrollService.processPayroll(request);
             return ResponseEntity.ok(result);
         } catch (Exception e) {

@@ -39,7 +39,8 @@ public class DataLoader implements CommandLineRunner {
         Employee emp1 = new Employee();
         emp1.setId(UUID.fromString("11111111-1111-1111-1111-111111111111"));
         emp1.setEmployeeId("EMP001");
-        emp1.setName("Alice Johnson");
+        emp1.setFirstName("Alice");
+        emp1.setLastName("Johnson");
         emp1.setDepartment("Engineering");
         emp1.setSalary(new BigDecimal("120000.00"));
         emp1.setBenefitPlan("Premium Health");
@@ -54,7 +55,8 @@ public class DataLoader implements CommandLineRunner {
         Employee emp2 = new Employee();
         emp2.setId(UUID.fromString("22222222-2222-2222-2222-222222222222"));
         emp2.setEmployeeId("EMP002");
-        emp2.setName("Bob Williams");
+        emp2.setFirstName("Bob");
+        emp2.setLastName("Williams");
         emp2.setDepartment("Product");
         emp2.setSalary(new BigDecimal("115000.00"));
         emp2.setBenefitPlan("Standard Health + Vision");
@@ -69,7 +71,8 @@ public class DataLoader implements CommandLineRunner {
         Employee emp3 = new Employee();
         emp3.setId(UUID.fromString("33333333-3333-3333-3333-333333333333"));
         emp3.setEmployeeId("EMP003");
-        emp3.setName("Charlie Brown");
+        emp3.setFirstName("Charlie");
+        emp3.setLastName("Brown");
         emp3.setDepartment("Marketing");
         emp3.setSalary(new BigDecimal("95000.00"));
         emp3.setBenefitPlan("Standard Health");
@@ -84,7 +87,8 @@ public class DataLoader implements CommandLineRunner {
         Employee emp4 = new Employee();
         emp4.setId(UUID.fromString("44444444-4444-4444-4444-444444444444"));
         emp4.setEmployeeId("EMP004");
-        emp4.setName("Diana Miller");
+        emp4.setFirstName("Diana");
+        emp4.setLastName("Miller");
         emp4.setDepartment("Engineering");
         emp4.setSalary(new BigDecimal("145000.00"));
         emp4.setBenefitPlan("Premium Health + Dental");
@@ -99,7 +103,8 @@ public class DataLoader implements CommandLineRunner {
         Employee emp5 = new Employee();
         emp5.setId(UUID.fromString("55555555-5555-5555-5555-555555555555"));
         emp5.setEmployeeId("EMP005");
-        emp5.setName("Ethan Davis");
+        emp5.setFirstName("Ethan");
+        emp5.setLastName("Davis");
         emp5.setDepartment("Sales");
         emp5.setSalary(new BigDecimal("105000.00"));
         emp5.setBenefitPlan("Standard Health");
@@ -114,7 +119,8 @@ public class DataLoader implements CommandLineRunner {
         Employee emp6 = new Employee();
         emp6.setId(UUID.fromString("66666666-6666-6666-6666-666666666666"));
         emp6.setEmployeeId("EMP006");
-        emp6.setName("Fiona Garcia");
+        emp6.setFirstName("Fiona");
+        emp6.setLastName("Garcia");
         emp6.setDepartment("HR");
         emp6.setSalary(new BigDecimal("88000.00"));
         emp6.setBenefitPlan("Standard Health + Vision");
@@ -129,7 +135,8 @@ public class DataLoader implements CommandLineRunner {
         Employee emp7 = new Employee();
         emp7.setId(UUID.fromString("77777777-7777-7777-7777-777777777777"));
         emp7.setEmployeeId("EMP007");
-        emp7.setName("George Rodriguez");
+        emp7.setFirstName("George");
+        emp7.setLastName("Rodriguez");
         emp7.setDepartment("Engineering");
         emp7.setSalary(new BigDecimal("130000.00"));
         emp7.setBenefitPlan("Premium Health");

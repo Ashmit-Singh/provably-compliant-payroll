@@ -10,12 +10,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/blockchain")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class BlockchainController {
-    
+
     @Autowired
     private BlockchainService blockchainService;
-    
+
     @GetMapping("/transactions")
     public ResponseEntity<List<BlockchainTransaction>> getTransactions() {
         List<BlockchainTransaction> transactions = blockchainService.getTransactionHistory();

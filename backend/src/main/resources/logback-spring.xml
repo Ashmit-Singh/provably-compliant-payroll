@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    
+    <!-- Console Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <logLevel/>
+                <loggerName/>
+                <message/>
+                <mdc/>
+                <stackTrace/>
+                <pattern>
+                    <pattern>
+                        {
+                            "service": "compliant-payroll-backend",
+                            "traceId": "%X{traceId:-}",
+                            "spanId": "%X{spanId:-}",
+                            "thread": "%thread",
+                            "class": "%logger{36}",
+                            "method": "%method",
+                            "line": "%line"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <!-- File Appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/application.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <logLevel/>
+                <loggerName/>
+                <message/>
+                <mdc/>
+                <stackTrace/>
+                <pattern>
+                    <pattern>
+                        {
+                            "service": "compliant-payroll-backend",
+                            "traceId": "%X{traceId:-}",
+                            "spanId": "%X{spanId:-}",
+                            "thread": "%thread",
+                            "class": "%logger{36}",
+                            "method": "%method",
+                            "line": "%line"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <!-- Security Events Appender -->
+    <appender name="SECURITY" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/security.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/security.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>50MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>90</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <logLevel/>
+                <loggerName/>
+                <message/>
+                <mdc/>
+                <stackTrace/>
+                <pattern>
+                    <pattern>
+                        {
+                            "service": "compliant-payroll-backend",
+                            "type": "security",
+                            "traceId": "%X{traceId:-}",
+                            "userId": "%X{userId:-}",
+                            "ip": "%X{ip:-}",
+                            "userAgent": "%X{userAgent:-}",
+                            "thread": "%thread"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <!-- Audit Events Appender -->
+    <appender name="AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/audit.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/audit.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>50MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>365</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <logLevel/>
+                <loggerName/>
+                <message/>
+                <mdc/>
+                <stackTrace/>
+                <pattern>
+                    <pattern>
+                        {
+                            "service": "compliant-payroll-backend",
+                            "type": "audit",
+                            "traceId": "%X{traceId:-}",
+                            "userId": "%X{userId:-}",
+                            "action": "%X{action:-}",
+                            "resource": "%X{resource:-}",
+                            "ip": "%X{ip:-}",
+                            "thread": "%thread"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <!-- Async Appenders for better performance -->
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE"/>
+        <queueSize>512</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>false</includeCallerData>
+    </appender>
+
+    <appender name="ASYNC_SECURITY" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="SECURITY"/>
+        <queueSize>256</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>false</includeCallerData>
+    </appender>
+
+    <appender name="ASYNC_AUDIT" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="AUDIT"/>
+        <queueSize>256</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>false</includeCallerData>
+    </appender>
+
+    <!-- Logger configurations -->
+    <logger name="com.compliantpay" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </logger>
+
+    <logger name="com.compliantpay.security" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_SECURITY"/>
+    </logger>
+
+    <logger name="com.compliantpay.audit" level="INFO" additivity="false">
+        <appender-ref ref="ASYNC_AUDIT"/>
+    </logger>
+
+    <logger name="org.springframework.security" level="WARN" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_SECURITY"/>
+    </logger>
+
+    <logger name="org.hibernate.SQL" level="WARN" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </logger>
+
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="WARN" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </logger>
+
+    <!-- Root logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </root>
+
+    <!-- Profile-specific configurations -->
+    <springProfile name="dev,development">
+        <logger name="com.compliantpay" level="DEBUG"/>
+        <logger name="org.springframework.web" level="DEBUG"/>
+        <logger name="org.hibernate.SQL" level="DEBUG"/>
+        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+    </springProfile>
+
+    <springProfile name="prod,production">
+        <logger name="com.compliantpay" level="WARN"/>
+        <logger name="org.springframework" level="WARN"/>
+        <logger name="org.hibernate" level="WARN"/>
+        <root level="WARN">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_FILE"/>
+        </root>
+    </springProfile>
+</configuration>

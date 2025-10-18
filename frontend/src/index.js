@@ -1,28 +1,99 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import './styles/index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 
-// Get the root element
-const container = document.getElementById('root');
+import AppLayout from './App';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+import EmployeeManagement from './pages/EmployeeManagement';
+import RunPayroll from './pages/RunPayroll';
+import ComplianceTaxEngine from './pages/ComplianceTaxEngine';
+import PredictiveAnalytics from './pages/PredictiveAnalytics';
+import BlockchainAuditTrail from './pages/BlockchainAuditTrail';
+import ProfilePage from './pages/ProfilePage';
 
-// Check if the root element exists
-if (!container) {
-  throw new Error(
-    'Root element with id "root" not found. Check your index.html file.'
+import { LayoutProvider } from './contexts/LayoutContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-slate-100 text-slate-800">
+        Loading Application...
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    if (process.env.NODE_ENV === 'development') console.log('User not authenticated, redirecting to login from:', location.pathname);
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return children;
+};
+
+// Main Router Setup
+const AppRouter = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Protected Routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/dashboard" replace />} />
+
+          {/* Authenticated Child Routes */}
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="employees" element={<EmployeeManagement />} />
+          <Route path="run-payroll" element={<RunPayroll />} />
+          <Route path="compliance" element={<ComplianceTaxEngine />} />
+          <Route path="analytics" element={<PredictiveAnalytics />} />
+          <Route path="audit-trail" element={<BlockchainAuditTrail />} />
+          <Route path="profile" element={<ProfilePage />} />
+
+          {/* Authenticated 404 Redirect */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Route>
+
+        {/* Public 404 Fallback */}
+        <Route
+          path="*"
+          element={
+            <div className="flex flex-col items-center justify-center h-screen bg-slate-100">
+              <h2 className="text-2xl mb-4 text-slate-800">404 - Page Not Found</h2>
+              <Link to="/" className="text-blue-500 hover:underline">
+                Go Home
+              </Link>
+            </div>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
 
-// Create root and render app
-const root = ReactDOM.createRoot(container);
+// Render the Application
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <AuthProvider>
+      <LayoutProvider>
+        <AppRouter />
+      </LayoutProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

@@ -1,87 +1,61 @@
 import React, { useState } from 'react';
-import { Home, Users, DollarSign, FileCheck2, Building, BrainCircuit, Link as LinkIcon } from 'lucide-react';
-
-// Import Components
-import Dashboard from './components/dashboard/Dashboard';
-import EmployeeManagement from './components/dashboard/EmployeeManagement';
-import RunPayroll from './components/dashboard/RunPayroll';
-import ComplianceTaxEngine from './components/dashboard/ComplianceTaxEngine';
-import PredictiveAnalytics from './components/dashboard/PredictiveAnalytics';
-import BlockchainAuditTrail from './components/dashboard/BlockchainAuditTrail';
+import { Outlet, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLayout } from './contexts/LayoutContext';
 import Sidebar from './components/layout/Sidebar';
 import Header from './components/layout/Header';
+import CommandPalette from './components/ui/CommandPalette';
 
-// Navigation Items
-const navItems = [
-  { name: 'Dashboard', icon: Home },
-  { name: 'Employee Management', icon: Users },
-  { name: 'Run Payroll', icon: DollarSign },
-  { name: 'Compliance & Tax Engine', icon: Building },
-  { name: 'Predictive Analytics', icon: BrainCircuit },
-  { name: 'Blockchain Audit Trail', icon: LinkIcon },
-];
-
-function App() {
-  const [activePage, setActivePage] = useState('Dashboard');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const renderPage = () => {
-    try {
-      switch (activePage) {
-        case 'Dashboard': 
-          return <Dashboard />;
-        case 'Employee Management': 
-          return <EmployeeManagement />;
-        case 'Run Payroll': 
-          return <RunPayroll />;
-        case 'Compliance & Tax Engine': 
-          return <ComplianceTaxEngine />;
-        case 'Predictive Analytics': 
-          return <PredictiveAnalytics />;
-        case 'Blockchain Audit Trail': 
-          return <BlockchainAuditTrail />;
-        default: 
-          return <Dashboard />;
-      }
-    } catch (error) {
-      console.error('Error rendering page:', error);
-      return (
-        <div className="p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <h2 className="text-red-800 font-semibold">Error Loading Page</h2>
-            <p className="text-red-600">There was an error loading the {activePage} page.</p>
-          </div>
-        </div>
-      );
-    }
-  };
+const AppLayout = () => {
+  const { setActivePage, isSidebarOpen, setIsSidebarOpen } = useLayout();
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const location = useLocation(); // Add this hook to get current location
 
   return (
-    <div className="flex h-screen bg-slate-100 font-sans">
-      {/* Sidebar */}
-      <Sidebar 
-        navItems={navItems}
-        activePage={activePage}
-        setActivePage={setActivePage}
-        isSidebarOpen={isSidebarOpen}
-        setIsSidebarOpen={setIsSidebarOpen}
-      />
+    <div className="bg-slate-900 text-white min-h-screen font-sans flex relative overflow-hidden">
+      {/* Background Gradients */}
+      <div className="absolute inset-0 z-0 opacity-50">
+        <div className="absolute w-full h-full bg-[radial-gradient(circle_at_10%_20%,_rgba(131,58,180,0.1)_0%,_rgba(253,29,29,0)_50%)]"></div>
+        <div className="absolute w-full h-full bg-[radial-gradient(circle_at_90%_80%,_rgba(252,176,69,0.1)_0%,_rgba(253,29,29,0)_50%)]"></div>
+        <div className="absolute w-full h-full bg-[radial-gradient(circle_at_50%_50%,_rgba(0,169,255,0.05)_0%,_rgba(253,29,29,0)_50%)]"></div>
+      </div>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-y-auto">
-        {/* Header */}
-        <Header 
-          activePage={activePage} 
-          setIsSidebarOpen={setIsSidebarOpen}
+      {/* Sidebar uses LayoutContext internally */}
+      <Sidebar />
+
+      <div className="flex-1 flex flex-col z-10 bg-slate-900/10">
+        {/* Header uses LayoutContext internally for activePage, receives toggles */}
+        <Header
+          onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          onCommandPaletteToggle={() => setIsCommandPaletteOpen(true)}
         />
-        
-        {/* Page Content */}
-        <div className="p-6 flex-1">
-          {renderPage()}
-        </div>
-      </main>
+
+        {/* Main content area where routed pages will render */}
+        <main className="flex-1 p-6 overflow-y-auto">
+          {/* AnimatePresence for page transitions based on route changes */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              {/* Outlet renders the matched child route component */}
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
+
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        setIsOpen={setIsCommandPaletteOpen}
+        setActivePage={setActivePage}
+      />
     </div>
   );
-}
+};
 
-export default App;
+export default AppLayout;

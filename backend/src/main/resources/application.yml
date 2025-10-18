@@ -1,42 +1,165 @@
 spring:
   application:
     name: compliant-payroll-backend
+  profiles:
+    active: dev
   datasource:
-    url: jdbc:h2:mem:parkwise;DB_CLOSE_DELAY=-1
+    # Development database
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
-    password: 
-
+    password: password
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update # or create-drop
-
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
   h2:
     console:
       enabled: true
       path: /h2-console
-  # H2 Database Configuration
-
-  # Jackson configuration
+      settings:
+        web-allow-others: false
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=300s
   jackson:
     serialization:
       write-dates-as-timestamps: false
-    date-format: yyyy-MM-dd'T'HH:mm:ss
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: false
+    date-format: yyyy-MM-dd'T'HH:mm:ss.SSSXXX
     time-zone: UTC
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 server:
   port: 8080
   servlet:
     context-path: /api
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+  http2:
+    enabled: true
 
+# Management and monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Logging configuration
 logging:
   level:
     com.compliantpay: INFO
     org.springframework.web: INFO
-    org.hibernate: INFO
+    org.springframework.security: WARN
+    org.hibernate: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
-# Custom configuration
+# Custom application configuration
 app:
   name: CompliantPay Backend
   version: 1.0.0
+  jwt:
+    secret: dmVyeS1zZWNyZXQta2V5LXRoYXQtaXMtYmFzZS02NC1lbmNvZGVkLWFuZC1sb25nLWVub3VnaC1mb3ItaHMtMjU2LWV4YW1wbGUtdmFsdWUtcmVwbGFjZS1tZQ==
+    expirationMs: 3600000
+  security:
+    cors:
+      allowed-origins: http://localhost:3000,http://localhost:3001
+      allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
+      allowed-headers: "*"
+      allow-credentials: true
+      max-age: 3600
+  rate-limiting:
+    enabled: true
+    requests-per-minute: 100
+    burst-capacity: 200
+  blockchain:
+    node-url: http://localhost:8545
+    gas-limit: 300000
+    gas-price: 20000000000
+  ai-service:
+    url: http://localhost:8000
+    timeout: 30000
+  audit:
+    enabled: true
+    log-level: INFO
+
+---
+# Development profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+logging:
+  level:
+    com.compliantpay: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+---
+# Production profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:postgresql://localhost:5432/compliant_payroll
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:payroll_user}
+    password: ${DB_PASSWORD:payroll_pass}
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+logging:
+  level:
+    com.compliantpay: WARN
+    org.springframework: WARN
+    org.hibernate: WARN
+    root: WARN

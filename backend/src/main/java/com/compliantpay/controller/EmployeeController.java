@@ -1,15 +1,26 @@
 package com.compliantpay.controller;
 
-import com.compliantpay.model.Employee;
-import com.compliantpay.service.EmployeeService;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.compliantpay.model.Employee;
+import com.compliantpay.service.EmployeeService;
+import com.compliantpay.util.SecurityUtils;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -34,7 +45,8 @@ public class EmployeeController {
     
     @GetMapping("/employee-id/{employeeId}")
     public ResponseEntity<Employee> getEmployeeByEmployeeId(@PathVariable String employeeId) {
-        return employeeService.getEmployeeByEmployeeId(employeeId)
+        String cleanId = SecurityUtils.sanitize(employeeId);
+        return employeeService.getEmployeeByEmployeeId(cleanId)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
@@ -42,6 +54,12 @@ public class EmployeeController {
     @PostMapping
     public ResponseEntity<Employee> createEmployee(@Valid @RequestBody Employee employee) {
         try {
+            // sanitize string fields on server side
+            employee.setEmployeeId(SecurityUtils.sanitize(employee.getEmployeeId()));
+            employee.setFirstName(SecurityUtils.sanitize(employee.getFirstName()));
+            employee.setLastName(SecurityUtils.sanitize(employee.getLastName()));
+            employee.setDepartment(SecurityUtils.sanitize(employee.getDepartment()));
+            employee.setLocation(SecurityUtils.sanitize(employee.getLocation()));
             Employee createdEmployee = employeeService.createEmployee(employee);
             return ResponseEntity.ok(createdEmployee);
         } catch (IllegalArgumentException e) {
@@ -54,6 +72,11 @@ public class EmployeeController {
             @PathVariable UUID id, 
             @Valid @RequestBody Employee employeeDetails) {
         try {
+            // sanitize fields
+            employeeDetails.setFirstName(SecurityUtils.sanitize(employeeDetails.getFirstName()));
+            employeeDetails.setLastName(SecurityUtils.sanitize(employeeDetails.getLastName()));
+            employeeDetails.setDepartment(SecurityUtils.sanitize(employeeDetails.getDepartment()));
+            employeeDetails.setLocation(SecurityUtils.sanitize(employeeDetails.getLocation()));
             Employee updatedEmployee = employeeService.updateEmployee(id, employeeDetails);
             return ResponseEntity.ok(updatedEmployee);
         } catch (RuntimeException e) {
@@ -73,7 +96,8 @@ public class EmployeeController {
     
     @GetMapping("/department/{department}")
     public ResponseEntity<List<Employee>> getEmployeesByDepartment(@PathVariable String department) {
-        List<Employee> employees = employeeService.getEmployeesByDepartment(department);
+        String clean = SecurityUtils.sanitize(department);
+        List<Employee> employees = employeeService.getEmployeesByDepartment(clean);
         return ResponseEntity.ok(employees);
     }
     

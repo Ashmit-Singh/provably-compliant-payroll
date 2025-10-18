@@ -18,9 +18,13 @@ public class Employee {
     @Column(name = "employee_id", unique = true, nullable = false)
     private String employeeId;
     
-    @NotBlank(message = "Name is required")
-    @Column(nullable = false)
-    private String name;
+    @NotBlank(message = "First name is required")
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+    
+    @NotBlank(message = "Last name is required")
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
     
     @NotBlank(message = "Department is required")
     @Column(nullable = false)
@@ -58,11 +62,12 @@ public class Employee {
         this.updatedAt = LocalDateTime.now();
     }
     
-    public Employee(String employeeId, String name, String department, 
+    public Employee(String employeeId, String firstName, String lastName, String department,
                    BigDecimal salary, String benefitPlan, String location) {
         this();
         this.employeeId = employeeId;
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.department = department;
         this.salary = salary;
         this.benefitPlan = benefitPlan;
@@ -81,8 +86,11 @@ public class Employee {
     public String getEmployeeId() { return employeeId; }
     public void setEmployeeId(String employeeId) { this.employeeId = employeeId; }
     
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
     
     public String getDepartment() { return department; }
     public void setDepartment(String department) { this.department = department; }

@@ -8,17 +8,19 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/analytics")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class AnalyticsController {
-    
+
     @PostMapping("/predict-impact")
     public ResponseEntity<Map<String, Object>> predictLegislationImpact(
             @RequestBody Map<String, Object> request) {
         
         // Mock AI analysis - in production this would call the AI service
         String legislationText = (String) request.get("legislationText");
-        
+        System.out.println("Analyzing impact for: " + legislationText);
+
         Map<String, Object> analysis = new HashMap<>();
+        analysis.put("projectedAnnualCostIncrease", 38500.0);
         analysis.put("projectedCostIncrease", 38500);
         analysis.put("affectedEmployeeCount", 4);
         analysis.put("monthlyIncrease", 3208);

@@ -7,6 +7,7 @@ import logging
 from .services.nlp_service import NLPService
 from .services.prediction_service import PredictionService
 from .services.compliance_parser import ComplianceParser
+from .services.ai_compliance_copilot import AIComplianceCopilot
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -31,6 +32,7 @@ app.add_middleware(
 nlp_service = NLPService()
 prediction_service = PredictionService()
 compliance_parser = ComplianceParser()
+copilot = AIComplianceCopilot(nlp_service, prediction_service, compliance_parser)
 
 class LegislationAnalysisRequest(BaseModel):
     legislation_text: str
@@ -82,6 +84,32 @@ async def analyze_legislation_impact(request: LegislationAnalysisRequest):
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "ai-service"}
+
+
+@app.post('/copilot/monitor')
+async def copilot_monitor(payload: dict):
+    """Monitor regulatory feeds or ad-hoc text. Payload may include 'feed_urls', 'ad_hoc_texts', and optional 'current_employee_data'."""
+    try:
+        feed_urls = payload.get('feed_urls')
+        ad_hoc_texts = payload.get('ad_hoc_texts')
+        current_employee_data = payload.get('current_employee_data')
+        result = copilot.monitor_global_regulations(feed_urls, ad_hoc_texts, current_employee_data)
+        return result
+    except Exception as e:
+        logger.error(f"Copilot monitor error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post('/copilot/risks')
+async def copilot_risks(payload: dict):
+    """Predict compliance risks for provided payroll data (list of employee dicts)."""
+    try:
+        payroll_data = payload.get('payroll_data', [])
+        result = copilot.predict_compliance_risks(payroll_data)
+        return result
+    except Exception as e:
+        logger.error(f"Copilot risks error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

@@ -57,7 +57,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Employee updateEmployee(UUID id, Employee employeeDetails) {
         return employeeRepository.findById(id)
             .map(employee -> {
-                employee.setName(employeeDetails.getName());
+                employee.setFirstName(employeeDetails.getFirstName());
+                employee.setLastName(employeeDetails.getLastName());
                 employee.setDepartment(employeeDetails.getDepartment());
                 employee.setSalary(employeeDetails.getSalary());
                 employee.setBenefitPlan(employeeDetails.getBenefitPlan());
