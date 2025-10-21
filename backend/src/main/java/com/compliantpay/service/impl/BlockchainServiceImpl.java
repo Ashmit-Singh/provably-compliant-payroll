@@ -1,20 +1,21 @@
 package com.compliantpay.service.impl;
 
-import com.compliantpay.model.BlockchainTransaction;
-import com.compliantpay.service.BlockchainService;
-import org.springframework.stereotype.Service;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
+import com.compliantpay.model.BlockchainTransaction;
+import com.compliantpay.service.BlockchainService;
+// ...existing code...
 
 @Service
 public class BlockchainServiceImpl implements BlockchainService {
     
-    private List<BlockchainTransaction> transactionLedger = new ArrayList<>();
+    private final List<BlockchainTransaction> transactionLedger = new ArrayList<>();
     private String lastHash = "0x0000000000000000000000000000000000000000000000000000000000000000";
     
     @Override

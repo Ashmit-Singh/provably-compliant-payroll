@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Loader, 
@@ -23,8 +23,9 @@ import {
   MapPin
 } from 'lucide-react';
 import { runPayroll, getEmployees, getPayrollHistory, downloadPayrollReport } from '../services/api';
+// Removed unused lazy PayrollHistoryCard
 
-const RunPayrollPage = () => {
+const RunPayrollPage = memo(() => {
     // isLoading only used for UI; no setter required here
     const [isLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -171,7 +172,7 @@ const RunPayrollPage = () => {
         return filtered;
     }, [employees, searchTerm, departmentFilter, locationFilter]);
 
-    const handleRunPayroll = async () => {
+    const handleRunPayroll = useCallback(async () => {
         if (selectedEmployees.length === 0) {
             setError("No employees selected for payroll.");
             return;
@@ -233,9 +234,9 @@ const RunPayrollPage = () => {
             setError(err.message || 'An unknown error occurred during the payroll run.');
             setProcessingSteps(prev => prev.map(step => ({ ...step, status: 'failed' })));
         }
-    };
+    }, [selectedEmployees, payPeriod, payDate]);
 
-    const handlePreview = () => {
+    const handlePreview = useCallback(() => {
         const selectedEmps = employees.filter(emp => selectedEmployees.includes(emp.id));
         const totalAmount = selectedEmps.reduce((sum, emp) => sum + (emp.salary || 0), 0);
         
@@ -247,9 +248,9 @@ const RunPayrollPage = () => {
             payDate
         });
         setShowPreview(true);
-    };
+    }, [employees, selectedEmployees, payPeriod, payDate]);
 
-    const handleDownloadReport = async () => {
+    const handleDownloadReport = useCallback(async () => {
         if (!payrollResult) return;
         
         try {
@@ -266,7 +267,7 @@ const RunPayrollPage = () => {
         } catch (err) {
             setError("Failed to download payroll report.");
         }
-    };
+    }, [payrollResult, payPeriod]);
 
     const toggleEmployeeSelection = (employeeId) => {
         setSelectedEmployees(prev => 
@@ -778,6 +779,6 @@ const RunPayrollPage = () => {
             </div>
         </div>
     );
-};
+});
 
 export default RunPayrollPage;

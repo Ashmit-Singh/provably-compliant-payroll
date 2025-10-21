@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     FileCheck2, 
@@ -19,7 +19,9 @@ import {
 } from 'lucide-react';
 import { getTransactions, verifyTransaction, getLastHash } from '../services/api';
 
-const BlockchainAuditTrailPage = () => {
+// Removed unused lazy TransactionTable
+
+const BlockchainAuditTrailPage = memo(() => {
     const [expandedId, setExpandedId] = useState(null);
     const [transactions, setTransactions] = useState([]);
     const [filteredTransactions, setFilteredTransactions] = useState([]);
@@ -44,7 +46,7 @@ const BlockchainAuditTrailPage = () => {
     };
 
     // Fetch transactions and last hash
-    useEffect(() => {
+    React.useEffect(() => {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
@@ -65,7 +67,7 @@ const BlockchainAuditTrailPage = () => {
     }, []);
 
     // Apply filters and search
-    useEffect(() => {
+    React.useEffect(() => {
         let filtered = transactions;
 
         if (searchTerm) {
@@ -96,7 +98,7 @@ const BlockchainAuditTrailPage = () => {
         setExpandedId(expandedId === id ? null : id);
     };
 
-    const handleVerifyTransaction = async (txHash) => {
+    const handleVerifyTransaction = useCallback(async (txHash) => {
         setVerifyingTx(txHash);
         try {
             const isValid = await verifyTransaction(txHash);
@@ -109,9 +111,9 @@ const BlockchainAuditTrailPage = () => {
         } finally {
             setVerifyingTx(null);
         }
-    };
+    }, []);
 
-    const handleCopyHash = async (hash) => {
+    const handleCopyHash = useCallback(async (hash) => {
         try {
             await navigator.clipboard.writeText(hash);
             setCopiedHash(hash);
@@ -119,9 +121,9 @@ const BlockchainAuditTrailPage = () => {
         } catch (err) {
             console.error('Failed to copy hash:', err);
         }
-    };
+    }, []);
 
-    const handleRefresh = async () => {
+    const handleRefresh = useCallback(async () => {
         try {
             setIsLoading(true);
             const [txsData, lastHashData] = await Promise.all([
@@ -135,7 +137,7 @@ const BlockchainAuditTrailPage = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     const getTransactionIcon = (type) => {
         const config = transactionTypes[type] || transactionTypes['COMPLIANCE_CHECK'];
@@ -483,6 +485,6 @@ const BlockchainAuditTrailPage = () => {
             </AnimatePresence>
         </div>
     );
-};
+});
 
 export default BlockchainAuditTrailPage;

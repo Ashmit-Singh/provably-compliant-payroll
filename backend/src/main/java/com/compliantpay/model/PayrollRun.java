@@ -1,12 +1,16 @@
 package com.compliantpay.model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payroll_runs")
+@Table(name = "payroll_runs", indexes = {
+    @Index(name = "idx_payrollrun_status", columnList = "status"),
+    @Index(name = "idx_payrollrun_run_date", columnList = "run_date")
+})
 public class PayrollRun {
     
     @Id

@@ -82,6 +82,39 @@ export const taxRules = {
     }
 };
 
+export const taxRulesForApi = {
+    'USA - California': {
+        jurisdiction: 'USA - California',
+        rules: [
+            {
+                ruleName: 'Bracket 1',
+                ruleType: 'INCOME_TAX',
+                minIncome: 0,
+                maxIncome: 9325,
+                taxRate: 0.01,
+                isActive: true
+            },
+            {
+                ruleName: 'Bracket 2',
+                ruleType: 'INCOME_TAX',
+                minIncome: 9326,
+                maxIncome: 22107,
+                taxRate: 0.02,
+                isActive: true
+            },
+            {
+                ruleName: 'SDI Tax',
+                ruleType: 'DISABILITY_INSURANCE',
+                minIncome: 0,
+                maxIncome: null,
+                taxRate: 0.011,
+                isActive: true
+            }
+        ],
+        lastUpdated: new Date().toISOString()
+    }
+}
+
 export const blockchainTransactions = [
     { 
         id: 1, 

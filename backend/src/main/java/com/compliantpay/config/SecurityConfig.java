@@ -1,8 +1,7 @@
 package com.compliantpay.config;
 
-import com.compliantpay.security.AuthTokenFilter;
-import com.compliantpay.security.AuthEntryPointJwt;
-import com.compliantpay.service.impl.UserDetailsServiceImpl;
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +21,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-import java.util.List;
+import com.compliantpay.security.AuthEntryPointJwt;
+import com.compliantpay.security.AuthTokenFilter;
+import com.compliantpay.service.impl.UserDetailsServiceImpl;
+// ...existing code...
 
 /**
  * Security configuration for the application

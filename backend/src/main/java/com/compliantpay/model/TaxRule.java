@@ -1,12 +1,16 @@
 package com.compliantpay.model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tax_rules")
+@Table(name = "tax_rules", indexes = {
+    @Index(name = "idx_taxrule_jurisdiction", columnList = "jurisdiction"),
+    @Index(name = "idx_taxrule_rule_type", columnList = "rule_type")
+})
 public class TaxRule {
     
     @Id

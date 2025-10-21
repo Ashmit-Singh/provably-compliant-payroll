@@ -1,14 +1,9 @@
+
 package com.compliantpay.security;
 
-import com.compliantpay.service.impl.UserDetailsServiceImpl;
-import com.compliantpay.util.JwtUtils;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.IOException;
+
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +12,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
+import com.compliantpay.service.impl.UserDetailsServiceImpl;
+import com.compliantpay.util.JwtUtils;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * JWT Authentication Filter
@@ -26,16 +27,16 @@ import java.io.IOException;
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
 
-    @Autowired
+    
     private JwtUtils jwtUtils;
 
-    @Autowired
+    
     private UserDetailsServiceImpl userDetailsService;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
+    
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         try {
             // Extract JWT from the Authorization header
@@ -61,12 +62,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
                 // Set the Authentication object in the SecurityContext
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                logger.debug("Set Authentication context for user: {}", username);
+                logger.debug("Set Authentication context for user: " + username);
             }
-        } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}", e.getMessage());
+        } catch (RuntimeException e) {
+            logger.error("Cannot set user authentication", e);
         }
-
         // Continue the filter chain
         filterChain.doFilter(request, response);
     }

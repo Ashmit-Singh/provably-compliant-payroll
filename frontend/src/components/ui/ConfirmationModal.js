@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, AlertCircle, CheckCircle, Info, X } from 'lucide-react';
 
-const ConfirmationModal = ({ 
+const ConfirmationModal = memo(({ 
   isOpen, 
   onClose, 
   onConfirm, 
@@ -176,6 +176,6 @@ const ConfirmationModal = ({
       </motion.div>
     </AnimatePresence>
   );
-};
+});
 
 export default ConfirmationModal;

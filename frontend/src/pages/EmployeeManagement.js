@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import StatsCard from '../components/ui/StatsCard';
 import { motion, AnimatePresence } from 'framer-motion';
+import EarlyAccessCard from '../components/employee/EarlyAccessCard';
 import { 
     Plus, 
     Loader, 
@@ -37,8 +39,10 @@ import {
     getDepartments,
     getJobRoles 
 } from '../services/api';
+import { fetchCurrencyRates, optimizeCompensation, generateGlobalReport } from '../services/internationalPayrollManager';
 import Modal from '../components/ui/Modal';
 import ConfirmationModal from '../components/ui/ConfirmationModal';
+import GlobalPayrollReportCard from '../components/ui/GlobalPayrollReportCard';
 
 const EmployeeManagementPage = () => {
     const [employees, setEmployees] = useState([]);
@@ -90,6 +94,24 @@ const EmployeeManagementPage = () => {
 
     const [formState, setFormState] = useState(initialFormState);
     
+    // International payroll reporting
+    const [globalReport, setGlobalReport] = useState(null);
+    useEffect(() => {
+        async function runGlobalPayroll() {
+            try {
+                const rates = await fetchCurrencyRates();
+                if (rates && Object.keys(rates).length > 0) {
+                    const optimized = optimizeCompensation(employees.map(emp => ({ ...emp, salaryUSD: emp.salary, country: emp.locationCountry })), rates);
+                    setGlobalReport(generateGlobalReport(optimized));
+                } else {
+                    console.warn('Currency rates unavailable, skipping global payroll report');
+                }
+            } catch (err) {
+                console.error('Failed to fetch currency rates:', err);
+            }
+        }
+        if (employees.length > 0) runGlobalPayroll();
+    }, [employees]);
 
     // Fetch initial data
     useEffect(() => {
@@ -221,14 +243,30 @@ const EmployeeManagementPage = () => {
         setIsDeleteConfirmOpen(true);
     };
 
+    const { sanitizeInput } = require('../utils/sanitize');
+    const { validateEmployee } = require('../utils/validators');
+
     const handleFormSubmit = async (e) => {
         e.preventDefault();
+        // Sanitize all string fields
+        const sanitized = { ...formState };
+        Object.keys(sanitized).forEach(key => {
+            if (typeof sanitized[key] === 'string') {
+                sanitized[key] = sanitizeInput(sanitized[key]);
+            }
+        });
+        // Validate
+        const errors = validateEmployee(sanitized);
+        if (Object.keys(errors).length > 0) {
+            alert('Please fix the following errors before submitting:\n' + Object.values(errors).join('\n'));
+            return;
+        }
         try {
             if (editingEmployee) {
-                const updated = await updateEmployee(editingEmployee.id, formState);
+                const updated = await updateEmployee(editingEmployee.id, sanitized);
                 setEmployees(employees.map(emp => (emp.id === editingEmployee.id ? updated : emp)));
             } else {
-                const created = await addEmployee(formState);
+                const created = await addEmployee(sanitized);
                 setEmployees([...employees, created]);
             }
             setIsModalOpen(false);
@@ -439,50 +477,10 @@ const EmployeeManagementPage = () => {
             {/* Stats Overview */}
             {stats && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-white p-4 rounded-lg shadow border border-slate-200">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                                <Users className="text-blue-600" size={20} />
-                            </div>
-                            <div>
-                                <div className="text-2xl font-bold text-slate-800">{stats.totalEmployees}</div>
-                                <div className="text-sm text-slate-600">Total Employees</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg shadow border border-slate-200">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-green-100 rounded-lg">
-                                <DollarSign className="text-green-600" size={20} />
-                            </div>
-                            <div>
-                                <div className="text-2xl font-bold text-slate-800">${stats.totalPayroll?.toLocaleString()}</div>
-                                <div className="text-sm text-slate-600">Monthly Payroll</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg shadow border border-slate-200">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-purple-100 rounded-lg">
-                                <Building className="text-purple-600" size={20} />
-                            </div>
-                            <div>
-                                <div className="text-2xl font-bold text-slate-800">{stats.departmentCount}</div>
-                                <div className="text-sm text-slate-600">Departments</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg shadow border border-slate-200">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-orange-100 rounded-lg">
-                                <MapPin className="text-orange-600" size={20} />
-                            </div>
-                            <div>
-                                <div className="text-2xl font-bold text-slate-800">{stats.locationCount}</div>
-                                <div className="text-sm text-slate-600">Locations</div>
-                            </div>
-                        </div>
-                    </div>
+                    <StatsCard icon={<Users className="text-blue-600" size={20} />} label="Total Employees" value={stats.totalEmployees} color="blue" />
+                    <StatsCard icon={<DollarSign className="text-green-600" size={20} />} label="Monthly Payroll" value={`$${stats.totalPayroll?.toLocaleString()}`} color="green" />
+                    <StatsCard icon={<Building className="text-purple-600" size={20} />} label="Departments" value={stats.departmentCount} color="purple" />
+                    <StatsCard icon={<MapPin className="text-orange-600" size={20} />} label="Locations" value={stats.locationCount} color="orange" />
                 </div>
             )}
 
@@ -706,6 +704,7 @@ const EmployeeManagementPage = () => {
                                                     <div className="text-sm text-slate-500">
                                                         {emp.jobRole}
                                                     </div>
+                                                    <EarlyAccessCard employee={emp} />
                                                 </div>
                                             </div>
                                         </td>
@@ -1052,6 +1051,9 @@ const EmployeeManagementPage = () => {
                 confirmText="Delete All"
                 confirmVariant="danger"
             />
+
+            {/* Global Payroll Report */}
+            {globalReport && <GlobalPayrollReportCard report={globalReport} />}
         </div>
     );
 };

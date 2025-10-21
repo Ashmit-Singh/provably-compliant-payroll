@@ -3,8 +3,10 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLayout } from './contexts/LayoutContext';
 import Sidebar from './components/layout/Sidebar';
-import Header from './components/layout/Header';
+import HeaderModern from './components/layout/HeaderModern';
 import CommandPalette from './components/ui/CommandPalette';
+import ToastNotification from './components/ui/ToastNotification';
+import './styles/modern-theme.css';
 
 const AppLayout = () => {
   const { setActivePage, isSidebarOpen, setIsSidebarOpen } = useLayout();
@@ -12,26 +14,26 @@ const AppLayout = () => {
   const location = useLocation(); // Add this hook to get current location
 
   return (
-    <div className="bg-slate-900 text-white min-h-screen font-sans flex relative overflow-hidden">
+    <div className="min-h-screen font-sans flex relative overflow-hidden bg-slate-50">
       {/* Background Gradients */}
-      <div className="absolute inset-0 z-0 opacity-50">
+      {/* <div className="absolute inset-0 z-0 opacity-50">
         <div className="absolute w-full h-full bg-[radial-gradient(circle_at_10%_20%,_rgba(131,58,180,0.1)_0%,_rgba(253,29,29,0)_50%)]"></div>
         <div className="absolute w-full h-full bg-[radial-gradient(circle_at_90%_80%,_rgba(252,176,69,0.1)_0%,_rgba(253,29,29,0)_50%)]"></div>
         <div className="absolute w-full h-full bg-[radial-gradient(circle_at_50%_50%,_rgba(0,169,255,0.05)_0%,_rgba(253,29,29,0)_50%)]"></div>
-      </div>
+      </div> */}
 
       {/* Sidebar uses LayoutContext internally */}
       <Sidebar />
 
-      <div className="flex-1 flex flex-col z-10 bg-slate-900/10">
+      <div className="flex-1 flex flex-col z-10">
         {/* Header uses LayoutContext internally for activePage, receives toggles */}
-        <Header
+        <HeaderModern
           onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
           onCommandPaletteToggle={() => setIsCommandPaletteOpen(true)}
         />
 
         {/* Main content area where routed pages will render */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-6 overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors duration-200">
           {/* AnimatePresence for page transitions based on route changes */}
           <AnimatePresence mode="wait">
             <motion.div
@@ -54,6 +56,9 @@ const AppLayout = () => {
         setIsOpen={setIsCommandPaletteOpen}
         setActivePage={setActivePage}
       />
+
+      {/* Toast Notifications */}
+      <ToastNotification />
     </div>
   );
 };

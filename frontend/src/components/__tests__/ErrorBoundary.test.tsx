@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent } from '../../test-utils';
 import ErrorBoundary from '../ErrorBoundary';
 
@@ -75,8 +74,8 @@ describe('ErrorBoundary', () => {
   });
 
   it('shows error details in development mode', () => {
-    const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'development';
+    const originalEnv = process.env['NODE_ENV'];
+    (process.env as any)['NODE_ENV'] = 'development';
 
     render(
       <ErrorBoundary>
@@ -87,12 +86,12 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText('Error Details (Development)')).toBeInTheDocument();
     expect(screen.getByText('Error: Test error')).toBeInTheDocument();
 
-    process.env.NODE_ENV = originalEnv;
+    (process.env as any)['NODE_ENV'] = originalEnv;
   });
 
   it('does not show error details in production mode', () => {
-    const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
+    const originalEnv = process.env['NODE_ENV'];
+    (process.env as any)['NODE_ENV'] = 'production';
 
     render(
       <ErrorBoundary>
@@ -102,7 +101,7 @@ describe('ErrorBoundary', () => {
 
     expect(screen.queryByText('Error Details (Development)')).not.toBeInTheDocument();
 
-    process.env.NODE_ENV = originalEnv;
+    (process.env as any)['NODE_ENV'] = originalEnv;
   });
 
   it('renders custom fallback when provided', () => {

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom'; // Import useLocation
 import { useAuth } from '../contexts/AuthContext';
 import { LogIn, Loader, AlertCircle } from 'lucide-react';
 
-const LoginPage = () => {
+const LoginPage = memo(() => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login, isLoading, error } = useAuth();
@@ -13,7 +13,7 @@ const LoginPage = () => {
   // Determine where to redirect after login
   const from = location.state?.from?.pathname || "/dashboard"; // Default to dashboard
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     const success = await login(username, password);
     if (success) {
@@ -23,7 +23,7 @@ const LoginPage = () => {
       if (process.env.NODE_ENV === 'development') console.log('Login failed.');
       // The error state from useAuth will be set and displayed automatically
     }
-  };
+  }, [username, password, from, login, navigate]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 p-4">
@@ -113,6 +113,6 @@ const LoginPage = () => {
       </div>
     </div>
   );
-};
+});
 
 export default LoginPage;

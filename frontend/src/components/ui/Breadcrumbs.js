@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, Home } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
-const Breadcrumbs = ({ 
+const Breadcrumbs = memo(({ 
   items = [], 
   className = '',
   showHome = true,
@@ -122,10 +122,10 @@ const Breadcrumbs = ({
       </ol>
     </nav>
   );
-};
+});
 
 // Breadcrumb item component for custom breadcrumbs
-export const BreadcrumbItem = ({ 
+export const BreadcrumbItem = memo(({ 
   label, 
   href, 
   icon, 
@@ -164,10 +164,10 @@ export const BreadcrumbItem = ({
       {content}
     </span>
   );
-};
+});
 
 // Breadcrumb separator component
-export const BreadcrumbSeparator = ({ type = 'chevron' }) => {
+export const BreadcrumbSeparator = memo(({ type = 'chevron' }) => {
   switch (type) {
     case 'slash':
       return <span className="text-slate-400">/</span>;
@@ -177,6 +177,6 @@ export const BreadcrumbSeparator = ({ type = 'chevron' }) => {
     default:
       return <ChevronRight className="text-slate-400" size={16} />;
   }
-};
+});
 
 export default Breadcrumbs;

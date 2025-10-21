@@ -7,7 +7,12 @@
     "backend": "cd backend && mvn spring-boot:run",
     "frontend": "cd frontend && npm start",
     "build": "cd frontend && npm run build",
-    "install-deps": "cd frontend && npm install"
+    "install-deps": "cd frontend && npm install",
+    "setup-ngx-admin": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./tools/import-ngx-admin.ps1 -Force",
+    "frontend-angular": "cd frontend-angular && npm start",
+    "install-deps-angular": "cd frontend-angular && npm install",
+    "frontend-angular:build": "cd frontend-angular && npm run build",
+    "frontend-angular:serve": "cd frontend-angular && ng serve --proxy-config proxy.conf.json"
   },
   "keywords": [
     "payroll",
@@ -20,5 +25,8 @@
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^7.6.0"
+  },
+  "dependencies": {
+    "ethers": "^6.15.0"
   }
 }

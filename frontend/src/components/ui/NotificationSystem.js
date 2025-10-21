@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
 
@@ -20,7 +20,7 @@ const notificationReducer = (state, action) => {
 };
 
 // Notification Provider
-export const NotificationProvider = ({ children }) => {
+export const NotificationProvider = memo(({ children }) => {
   const [notifications, dispatch] = useReducer(notificationReducer, []);
 
   const addNotification = useCallback((notification) => {
@@ -93,7 +93,7 @@ export const NotificationProvider = ({ children }) => {
       <NotificationContainer />
     </NotificationContext.Provider>
   );
-};
+});
 
 // Hook to use notifications
 export const useNotifications = () => {

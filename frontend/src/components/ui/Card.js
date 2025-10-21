@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-const Card = ({ title, value, icon, subtext }) => {
+const Card = memo(({ title, value, icon, subtext }) => {
   // Ensure icon is properly rendered as a React element
   const renderIcon = () => {
     if (React.isValidElement(icon)) {
@@ -23,6 +23,6 @@ const Card = ({ title, value, icon, subtext }) => {
       </div>
     </div>
   );
-};
+});
 
 export default Card;

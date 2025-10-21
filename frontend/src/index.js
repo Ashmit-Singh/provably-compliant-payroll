@@ -4,17 +4,19 @@ import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react
 import './styles/index.css';
 
 import AppLayout from './App';
-import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
-import EmployeeManagement from './pages/EmployeeManagement';
-import RunPayroll from './pages/RunPayroll';
-import ComplianceTaxEngine from './pages/ComplianceTaxEngine';
+import LoginPageModern from './pages/LoginPageModern';
+import DashboardPageModern from './pages/DashboardPageModern';
+import EmployeeManagementModern from './pages/EmployeeManagementModern';
+import RunPayrollModern from './pages/RunPayrollModern';
+import ComplianceTaxEngineModern from './pages/ComplianceTaxEngineModern';
 import PredictiveAnalytics from './pages/PredictiveAnalytics';
 import BlockchainAuditTrail from './pages/BlockchainAuditTrail';
-import ProfilePage from './pages/ProfilePage';
+import ProfilePageModern from './pages/ProfilePageModern';
 
 import { LayoutProvider } from './contexts/LayoutContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -43,7 +45,7 @@ const AppRouter = () => {
     <BrowserRouter>
       <Routes>
         {/* Public Routes */}
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPageModern />} />
 
         {/* Protected Routes */}
         <Route
@@ -57,13 +59,13 @@ const AppRouter = () => {
           <Route index element={<Navigate to="/dashboard" replace />} />
 
           {/* Authenticated Child Routes */}
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="employees" element={<EmployeeManagement />} />
-          <Route path="run-payroll" element={<RunPayroll />} />
-          <Route path="compliance" element={<ComplianceTaxEngine />} />
+          <Route path="dashboard" element={<DashboardPageModern />} />
+          <Route path="employees" element={<EmployeeManagementModern />} />
+          <Route path="run-payroll" element={<RunPayrollModern />} />
+          <Route path="compliance" element={<ComplianceTaxEngineModern />} />
           <Route path="analytics" element={<PredictiveAnalytics />} />
           <Route path="audit-trail" element={<BlockchainAuditTrail />} />
-          <Route path="profile" element={<ProfilePage />} />
+          <Route path="profile" element={<ProfilePageModern />} />
 
           {/* Authenticated 404 Redirect */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
@@ -91,9 +93,13 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <AuthProvider>
-      <LayoutProvider>
-        <AppRouter />
-      </LayoutProvider>
+      <ThemeProvider>
+        <NotificationProvider>
+          <LayoutProvider>
+            <AppRouter />
+          </LayoutProvider>
+        </NotificationProvider>
+      </ThemeProvider>
     </AuthProvider>
   </React.StrictMode>
 );

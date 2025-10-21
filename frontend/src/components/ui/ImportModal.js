@@ -1,8 +1,8 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileSpreadsheet, AlertCircle, X, Download, FileText } from 'lucide-react';
 
-const ImportModal = ({ 
+const ImportModal = memo(({ 
   isOpen, 
   onClose, 
   onImport, 
@@ -315,6 +315,6 @@ const ImportModal = ({
       </motion.div>
     </AnimatePresence>
   );
-};
+});
 
 export default ImportModal;

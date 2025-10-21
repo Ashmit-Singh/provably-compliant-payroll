@@ -1,11 +1,11 @@
 package com.compliantpay.service.impl;
 
-import com.compliantpay.service.AnalyticsService;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.compliantpay.service.AnalyticsService;
 
 @Service
 public class AnalyticsServiceImpl implements AnalyticsService {

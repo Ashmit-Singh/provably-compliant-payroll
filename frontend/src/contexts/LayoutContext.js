@@ -11,13 +11,28 @@ export const useLayout = () => {
   return context;
 };
 
-const navItems = [
-    { name: 'Dashboard', icon: Home },
-    { name: 'Employee Management', icon: Users },
-    { name: 'Run Payroll', icon: DollarSign },
-    { name: 'Compliance & Tax Engine', icon: Building },
-    { name: 'Predictive Analytics', icon: BrainCircuit },
-    { name: 'Blockchain Audit Trail', icon: LinkIcon },
+const navSections = [
+  {
+    header: 'Core',
+    items: [
+      { name: 'Dashboard', icon: Home },
+      { name: 'Employee Management', icon: Users },
+      { name: 'Run Payroll', icon: DollarSign },
+    ]
+  },
+  {
+    header: 'Analytics',
+    items: [
+      { name: 'Compliance & Tax Engine', icon: Building },
+      { name: 'Predictive Analytics', icon: BrainCircuit },
+    ]
+  },
+  {
+    header: 'Audit',
+    items: [
+      { name: 'Blockchain Audit Trail', icon: LinkIcon },
+    ]
+  }
 ];
 
 export const LayoutProvider = ({ children }) => {
@@ -29,7 +44,7 @@ export const LayoutProvider = ({ children }) => {
     setIsSidebarOpen,
     activePage,
     setActivePage,
-    navItems
+    navSections
   };
 
   return (

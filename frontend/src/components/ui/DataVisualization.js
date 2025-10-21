@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   BarChart, 
@@ -17,6 +17,7 @@ import {
   AreaChart,
   Legend
 } from 'recharts';
+import AnimatedLoginForm from './ui/AnimatedLoginForm';
 
 // Color palette for charts
 const COLORS = [
@@ -33,7 +34,7 @@ const COLORS = [
 ];
 
 // Bar Chart Component
-export const BarChartComponent = ({ 
+export const BarChartComponent = memo(({
   data, 
   xKey, 
   yKey, 
@@ -44,6 +45,10 @@ export const BarChartComponent = ({
   color = COLORS[0],
   className = ''
 }) => {
+  const handleBarClick = useCallback((barData) => {
+    console.log('Bar clicked:', barData);
+  }, []);
+
   return (
     <div className={`bg-white p-6 rounded-lg shadow border border-slate-200 ${className}`}>
       {title && (
@@ -79,15 +84,16 @@ export const BarChartComponent = ({
             dataKey={yKey} 
             fill={color}
             radius={[4, 4, 0, 0]}
+            onClick={handleBarClick}
           />
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
-};
+});
 
 // Line Chart Component
-export const LineChartComponent = ({ 
+export const LineChartComponent = memo(({
   data, 
   xKey, 
   yKey, 
@@ -99,6 +105,10 @@ export const LineChartComponent = ({
   strokeWidth = 2,
   className = ''
 }) => {
+  const handleLineClick = useCallback((lineData) => {
+    console.log('Line clicked:', lineData);
+  }, []);
+
   return (
     <div className={`bg-white p-6 rounded-lg shadow border border-slate-200 ${className}`}>
       {title && (
@@ -137,15 +147,16 @@ export const LineChartComponent = ({
             strokeWidth={strokeWidth}
             dot={{ fill: color, strokeWidth: 2, r: 4 }}
             activeDot={{ r: 6, stroke: color, strokeWidth: 2 }}
+            onClick={handleLineClick}
           />
         </LineChart>
       </ResponsiveContainer>
     </div>
   );
-};
+});
 
 // Area Chart Component
-export const AreaChartComponent = ({ 
+export const AreaChartComponent = memo(({
   data, 
   xKey, 
   yKey, 
@@ -156,6 +167,10 @@ export const AreaChartComponent = ({
   color = COLORS[0],
   className = ''
 }) => {
+  const handleAreaClick = useCallback((areaData) => {
+    console.log('Area clicked:', areaData);
+  }, []);
+
   return (
     <div className={`bg-white p-6 rounded-lg shadow border border-slate-200 ${className}`}>
       {title && (
@@ -194,15 +209,16 @@ export const AreaChartComponent = ({
             fill={color}
             fillOpacity={0.3}
             strokeWidth={2}
+            onClick={handleAreaClick}
           />
         </AreaChart>
       </ResponsiveContainer>
     </div>
   );
-};
+});
 
 // Pie Chart Component
-export const PieChartComponent = ({ 
+export const PieChartComponent = memo(({
   data, 
   dataKey, 
   nameKey, 
@@ -213,6 +229,10 @@ export const PieChartComponent = ({
   colors = COLORS,
   className = ''
 }) => {
+  const handlePieClick = useCallback((pieData) => {
+    console.log('Pie slice clicked:', pieData);
+  }, []);
+
   return (
     <div className={`bg-white p-6 rounded-lg shadow border border-slate-200 ${className}`}>
       {title && (
@@ -230,6 +250,7 @@ export const PieChartComponent = ({
             fill="#8884d8"
             dataKey={dataKey}
             nameKey={nameKey}
+            onClick={handlePieClick}
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
@@ -250,10 +271,10 @@ export const PieChartComponent = ({
       </ResponsiveContainer>
     </div>
   );
-};
+});
 
 // Multi-series Line Chart
-export const MultiLineChartComponent = ({ 
+export const MultiLineChartComponent = memo(({
   data, 
   xKey, 
   series = [], 
@@ -265,6 +286,10 @@ export const MultiLineChartComponent = ({
   colors = COLORS,
   className = ''
 }) => {
+  const handleMultiLineClick = useCallback((multiLineData) => {
+    console.log('Multi-line data clicked:', multiLineData);
+  }, []);
+
   return (
     <div className={`bg-white p-6 rounded-lg shadow border border-slate-200 ${className}`}>
       {title && (
@@ -307,16 +332,17 @@ export const MultiLineChartComponent = ({
               dot={{ fill: serie.color || colors[index % colors.length], strokeWidth: 2, r: 4 }}
               activeDot={{ r: 6, stroke: serie.color || colors[index % colors.length], strokeWidth: 2 }}
               name={serie.name}
+              onClick={handleMultiLineClick}
             />
           ))}
         </LineChart>
       </ResponsiveContainer>
     </div>
   );
-};
+});
 
 // Stat Card Component
-export const StatCard = ({ 
+export const StatCard = memo(({
   title, 
   value, 
   change, 
@@ -366,10 +392,10 @@ export const StatCard = ({
       </div>
     </motion.div>
   );
-};
+});
 
 // Data Table Component
-export const DataTable = ({ 
+export const DataTable = memo(({
   data, 
   columns, 
   title,
@@ -447,16 +473,10 @@ export const DataTable = ({
       )}
     </div>
   );
-};
+});
 
-const ExportedCharts = {
-  BarChart: BarChartComponent,
-  LineChart: LineChartComponent,
-  AreaChart: AreaChartComponent,
-  PieChart: PieChartComponent,
-  MultiLineChart: MultiLineChartComponent,
-  StatCard,
-  DataTable
-};
+// Render the animated login form as the main export
+export default AnimatedLoginForm;
 
-export default ExportedCharts;
+// Add this to your main page/component to render the animated login form
+// <AnimatedLoginForm />

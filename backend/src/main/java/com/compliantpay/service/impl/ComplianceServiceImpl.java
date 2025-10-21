@@ -1,15 +1,16 @@
+
 package com.compliantpay.service.impl;
 
 import com.compliantpay.model.TaxRule;
 import com.compliantpay.service.ComplianceService;
 import org.springframework.stereotype.Service;
 
+import org.springframework.cache.annotation.Cacheable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-
 @Service
 public class ComplianceServiceImpl implements ComplianceService {
     
@@ -21,8 +22,9 @@ public class ComplianceServiceImpl implements ComplianceService {
     }
     
     @Override
-    public BigDecimal calculateTax(String jurisdiction, BigDecimal annualIncome) {
-        List<TaxRule> rules = getTaxRulesForJurisdiction(jurisdiction);
+        @Cacheable("taxCalculation")
+        public BigDecimal calculateTax(String jurisdiction, BigDecimal annualIncome) {
+            List<TaxRule> rules = getTaxRulesForJurisdiction(jurisdiction);
         BigDecimal totalTax = BigDecimal.ZERO;
         
         for (TaxRule rule : rules) {
@@ -41,7 +43,8 @@ public class ComplianceServiceImpl implements ComplianceService {
     }
     
     private List<TaxRule> getTaxRulesForJurisdiction(String jurisdiction) {
-        return taxRulesCache.getOrDefault(jurisdiction, List.of());
+           // In production, this should query TaxRuleRepository with caching
+           return taxRulesCache.getOrDefault(jurisdiction, List.of());
     }
     
     private boolean isRuleApplicable(TaxRule rule, BigDecimal income) {
